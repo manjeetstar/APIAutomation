@@ -3,41 +3,42 @@ import org.testng.annotations.Test;
 import static io.restassured.RestAssured.*;
 
 import java.util.Map;
+import java.util.Random;
 import io.restassured.response.Response; 
 
 public class Day1 {
-    public Long PetID;
+    public Long PetID=new Random().nextLong(100000);
     @BeforeClass
     public void setup() {
         baseURI = "https://petstore.swagger.io";
         basePath="/v2";        
     }
     @Test
-    public void Test1() {
+    public void Create_Pet() {
         Response r1= given()
            .headers(Map.of("Content-Type","application/JSON", "Accept", "application/json"))
            .auth().none()
            .relaxedHTTPSValidation()      
            .body("""
                 {
-                "id": 0,
+                "id": %d,
                 "category": {
-                    "id": 0,
-                    "name": "string"
+                    "id": 112,
+                    "name": "Sample"
                 },
                 "name": "Apple Desktop",
                 "photoUrls": [
-                    "string"
+                    "Sample URL"
                 ],
                 "tags": [
                     {
-                    "id": 0,
-                    "name": "string"
+                    "id": 113,
+                    "name": "Sample Website"
                     }
                 ],
                 "status": "available"
                 }
-            """)                              
+            """.formatted(PetID))                              
         .when()
             .post("/pet")
         .then()
@@ -45,14 +46,15 @@ public class Day1 {
             .extract()
             .response(); 
             
-    PetID= r1.jsonPath().getLong("id");   
+    this.PetID= r1.jsonPath().getLong("id");   
+    System.out.println("Pet ID is " + PetID);
     }
 
     @Test(enabled = true)
-    public void Test2() {
+    public void Display_Pet() {
         given()
            .headers(Map.of("Content-Type","application/JSON", "Accept", "application/json"))          
-           .pathParam("petId", PetID)                              
+           .pathParam("petId", this.PetID)                              
         .when()
             .get("/pet/{petId}")
         .then()            
@@ -60,4 +62,38 @@ public class Day1 {
             .extract()
             .response();             
     }
+
+     @Test(enabled = true)
+    public void Update_Pet() throws InterruptedException {
+       Response r2=given()
+           .headers(Map.of("Content-Type","application/JSON", "Accept", "application/json"))         
+           .body("""
+                {
+                "id": %d,
+                "category": {
+                    "id": 112,
+                    "name": "ABC"
+                },
+                "name": "%s",
+                "photoUrls": [
+                    "Put queries"
+                ],
+                "tags": [
+                    {
+                    "id": 113,
+                    "name": "Put queries"
+                    }
+                ],
+                "status": "available"
+                }
+            """.formatted(this.PetID, "Apple Desktop - Updated"))                              
+        .when()
+            .put("/pet")
+        .then()            
+            .statusCode(200)
+            .extract()
+            .response();   
+            
+      System.out.println(r2.jsonPath().getLong("id"));
+    }    
 }
