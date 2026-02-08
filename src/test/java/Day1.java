@@ -95,5 +95,8 @@ public class Day1 {
             .response();   
             
       System.out.println(r2.jsonPath().getLong("id"));
+      r2.getHeaders().forEach(header ->{
+        System.out.println(header.getName() + " - " + header.getValue());
+      });
     }    
 }
