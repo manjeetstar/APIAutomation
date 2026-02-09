@@ -3,6 +3,7 @@ import org.testng.annotations.Test;
 import static io.restassured.RestAssured.*;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Random;
 import io.restassured.response.Response; 
@@ -51,6 +52,7 @@ public class Day1 {
 
     @Test
     public void Add_Product(){
+        File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
         Response r4= given()    
                         .headers(Map.of("Accept", "application/json"))
                         .header("Authorizaton", "Bearer" + Global_Token)
@@ -59,7 +61,7 @@ public class Day1 {
                         .multiPart("price", "1299")
                         .multiPart("brand", "Apple")
                         .multiPart("category", "smartphones")
-                        .multiPart("images", new File("src/test/resources/download.jpg"))
+                        .multiPart("images", image)
                      .when()
                         .post("/products/add")
                      .then()
