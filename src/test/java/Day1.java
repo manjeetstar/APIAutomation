@@ -38,7 +38,7 @@ public class Day1 {
 
     @Test
     public void get_user_details(){
-        Response r4 = given()
+                      given()
                         .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))
                         .header("Authorization", "Bearer"+ Global_Token)
                         .pathParam("id", 1)                        
@@ -47,7 +47,6 @@ public class Day1 {
                       .then()
                         .statusCode(200)
                         .extract().response();
-        r4.prettyPrint();
     }
 
     @Test
@@ -55,7 +54,7 @@ public class Day1 {
         File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
         Response r4= given()    
                         .headers(Map.of("Accept", "application/json"))
-                        .header("Authorizaton", "Bearer" + Global_Token)
+                        .header("Authorization", "Bearer" + Global_Token)
                         .multiPart("title", "iPhone 15 Pro")
                         .multiPart("description", "Latest Apple phone")
                         .multiPart("price", "1299")
@@ -65,9 +64,10 @@ public class Day1 {
                      .when()
                         .post("/products/add")
                      .then()
+                        .log().ifValidationFails()
                         .statusCode(201)
                         .extract()
                         .response();
-        r4.prettyPrint();
+        System.out.println(r4.getHeaders().getValue("x-ratelimit-remaining"));
     }
 }
