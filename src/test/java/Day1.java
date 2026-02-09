@@ -84,6 +84,5 @@ public class Day1 {
                         .body("total", equalTo(194))
                         .body("products.size()", equalTo(0))
                         .header("server", "cloudflare");
-
     }
 }
