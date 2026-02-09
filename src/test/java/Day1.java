@@ -68,6 +68,19 @@ public class Day1 {
                         .statusCode(201)
                         .extract()
                         .response();
-        System.out.println(r4.getHeaders().getValue("x-ratelimit-remaining"));
+        System.out.println("Remaining rate-limit: " + r4.getHeaders().getValue("x-ratelimit-remaining"));
+    }
+    @Test
+    public void pagination_part1(){
+        Response r5= given()
+                        .queryParams(Map.of("limit", 1, "skip", 0))
+                     .when()    
+                        .get("/products")
+                     .then()
+                        .statusCode(200)
+                        .extract()
+                        .response();
+        System.out.println(r5.jsonPath().getList("products").size());
+        r5.prettyPrint();
     }
 }
