@@ -2,7 +2,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -75,13 +74,16 @@ public class Day1 {
     @Test
     public void pagination_part1(){
                      given()
-                        .queryParams(Map.of("limit", 1, "skip", 193))
+                        .queryParams(Map.of("limit", 1000, "skip", 2000))
                      .when()    
                         .get("/products")
                      .then()
                         .statusCode(200)
-                        .body("skip", equalTo(193))
-                        .body("limit", equalTo(1))
-                        .body("total", greaterThan(0));        
+                        .body("skip", equalTo(2000))
+                        .body("limit", equalTo(0))
+                        .body("total", equalTo(194))
+                        .body("products.size()", equalTo(0))
+                        .header("server", "cloudflare");
+
     }
 }
