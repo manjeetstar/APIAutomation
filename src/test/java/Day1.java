@@ -4,16 +4,21 @@ import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.File;
+import java.io.ObjectInputFilter.Config;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Random;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification; 
 
+import Config.configClass;
+
+@SuppressWarnings("unused")
 public class Day1 {
     public Long PetID=new Random().nextLong(100000);
     public String Global_Token;
@@ -28,7 +33,9 @@ public class Day1 {
                   .build();
         resSpec = new ResponseSpecBuilder()
                     .expectStatusCode(200)
+                    .expectContentType(ContentType.JSON)
                     .build();
+        configClass.init();
    }
 
     @Test
