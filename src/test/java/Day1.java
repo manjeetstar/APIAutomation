@@ -36,13 +36,13 @@ public class Day1 {
                   .addHeaders(Map.of("Accept", "application/json"))
                   .build();
         resSpec = new ResponseSpecBuilder()
-                    .expectStatusCode(200)
+                    .expectStatusCode(201)
                     .expectContentType(ContentType.JSON)
                     .build();
         configClass.init();
-        RestAssured.filters(
-            new RetryOnFailureFilter(2,200)
-        );
+        // RestAssured.filters(
+        //     new RetryOnFailureFilter(2,200)
+        // );
    }
 
     @Test(enabled= false)
