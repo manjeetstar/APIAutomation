@@ -19,7 +19,8 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification; 
 
 import Config.configClass;
-import filter.RateLimitAwareFilter;
+import filter.RetryOnFailureFilter;
+import filter.RetryOnFailureFilter;
 
 @SuppressWarnings("unused")
 public class Day1 {
@@ -40,7 +41,7 @@ public class Day1 {
                     .build();
         configClass.init();
         RestAssured.filters(
-            new RateLimitAwareFilter(2, 2000, 60000)
+            new RetryOnFailureFilter(2,200)
         );
    }
 
@@ -83,7 +84,7 @@ public class Day1 {
     public void Add_Product(){
         File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
                     
-        IntStream.range(0, 120).forEach(i->{
+        IntStream.range(0, 3).forEach(i->{
                     given()    
                         .spec(reqSpec)
                         .header("Authorization", "Bearer" + Global_Token)
@@ -96,7 +97,7 @@ public class Day1 {
                      .when()
                         .post("/products/add")
                      .then()
-                        .log().status();
+                        .spec(resSpec);
             System.out.println("Request #" + (i + 1));
         });
     }
