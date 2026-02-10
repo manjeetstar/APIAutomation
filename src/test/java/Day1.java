@@ -1,4 +1,4 @@
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.equalTo;
@@ -7,20 +7,35 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Random;
-import io.restassured.response.Response; 
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification; 
 
 public class Day1 {
     public Long PetID=new Random().nextLong(100000);
     public String Global_Token;
+    public static RequestSpecification reqSpec;
+    public static ResponseSpecification resSpec;
 
-    @BeforeClass
-    public void setup() {
-        baseURI = "https://dummyjson.com";             
-    }
+   @BeforeSuite
+   public void setup(){
+        reqSpec = new RequestSpecBuilder()
+                  .setBaseUri("https://dummyjson.com")
+                  .addHeaders(Map.of("Accept", "application/json"))
+                  .build();
+        resSpec = new ResponseSpecBuilder()
+                    .expectStatusCode(200)
+                    .build();
+   }
+
     @Test
     public void get_global_token(){
          Response r3 = given()  
-                        .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))                      
+                        .spec(reqSpec)
+                        .header("Content-Type", "application/json")                      
                         .body("""
                             {
                                 "username": "emilys",
@@ -30,7 +45,7 @@ public class Day1 {
                     .when()
                         .post("/auth/login")
                     .then()
-                        .statusCode(200)
+                        .spec(resSpec)
                         .extract()
                         .response();
 
@@ -40,13 +55,13 @@ public class Day1 {
     @Test
     public void get_user_details(){
                       given()
-                        .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))
+                        .spec(reqSpec)
                         .header("Authorization", "Bearer"+ Global_Token)
                         .pathParam("id", 1)                        
                       .when()
                         .get("/carts/{id}")
                       .then()
-                        .statusCode(200)
+                        .spec(resSpec)
                         .extract().response();
     }
 
@@ -54,7 +69,7 @@ public class Day1 {
     public void Add_Product(){
         File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
         Response r4= given()    
-                        .headers(Map.of("Accept", "application/json"))
+                        .spec(reqSpec)
                         .header("Authorization", "Bearer" + Global_Token)
                         .multiPart("title", "iPhone 15 Pro")
                         .multiPart("description", "Latest Apple phone")
@@ -74,15 +89,16 @@ public class Day1 {
     @Test
     public void pagination_part1(){
                      given()
-                        .queryParams(Map.of("limit", 1000, "skip", 2000))
+                        .queryParams(Map.of("limit", 1, "skip", 0))
+                        .spec(reqSpec)
                      .when()    
                         .get("/products")
                      .then()
-                        .statusCode(200)
-                        .body("skip", equalTo(2000))
-                        .body("limit", equalTo(0))
+                        .spec(resSpec)
+                        .body("skip", equalTo(0))
+                        .body("limit", equalTo(1))
                         .body("total", equalTo(194))
-                        .body("products.size()", equalTo(0))
+                        .body("products.size()", equalTo(1))
                         .header("server", "cloudflare");
     }
 }
