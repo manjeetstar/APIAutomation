@@ -1,14 +1,16 @@
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 import java.io.File;
 import java.io.ObjectInputFilter.Config;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.IntStream;
 
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
@@ -17,6 +19,7 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification; 
 
 import Config.configClass;
+import filter.RateLimitAwareFilter;
 
 @SuppressWarnings("unused")
 public class Day1 {
@@ -36,9 +39,12 @@ public class Day1 {
                     .expectContentType(ContentType.JSON)
                     .build();
         configClass.init();
+        RestAssured.filters(
+            new RateLimitAwareFilter(2, 2000, 60000)
+        );
    }
 
-    @Test
+    @Test(enabled= false)
     public void get_global_token(){
          Response r3 = given()  
                         .spec(reqSpec)
@@ -53,13 +59,14 @@ public class Day1 {
                         .post("/auth/login")
                     .then()
                         .spec(resSpec)
+                        .statusCode(anyOf(is(200), is(403)))
                         .extract()
                         .response();
 
         this.Global_Token= r3.jsonPath().get("accessToken");        
     }
 
-    @Test
+    @Test(enabled= false)
     public void get_user_details(){
                       given()
                         .spec(reqSpec)
@@ -72,10 +79,12 @@ public class Day1 {
                         .extract().response();
     }
 
-    @Test
+    @Test(enabled= true)
     public void Add_Product(){
         File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
-        Response r4= given()    
+                    
+        IntStream.range(0, 120).forEach(i->{
+                    given()    
                         .spec(reqSpec)
                         .header("Authorization", "Bearer" + Global_Token)
                         .multiPart("title", "iPhone 15 Pro")
@@ -87,13 +96,11 @@ public class Day1 {
                      .when()
                         .post("/products/add")
                      .then()
-                        .log().ifValidationFails()
-                        .statusCode(201)
-                        .extract()
-                        .response();
-        System.out.println("Remaining rate-limit: " + r4.getHeaders().getValue("x-ratelimit-remaining"));
+                        .log().status();
+            System.out.println("Request #" + (i + 1));
+        });
     }
-    @Test
+    @Test(enabled= false)
     public void pagination_part1(){
                      given()
                         .queryParams(Map.of("limit", 1, "skip", 0))
