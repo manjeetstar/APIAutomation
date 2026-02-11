@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import java.io.File;
 import java.io.ObjectInputFilter.Config;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -20,6 +21,7 @@ import io.restassured.specification.ResponseSpecification;
 
 import Config.configClass;
 import filter.RetryOnFailureFilter;
+import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
 import filter.RetryOnFailureFilter;
 import DataBuilder.DataBuild;
 import DataClass.*;
@@ -47,7 +49,7 @@ public class Day1 {
         // );
    }
 
-    @Test(enabled= false)
+    @Test(enabled= true)
     public void get_global_token(){
          Response r3 = given()  
                         .spec(reqSpec)
@@ -61,25 +63,29 @@ public class Day1 {
                     .when()
                         .post("/auth/login")
                     .then()
-                        .spec(resSpec)
-                        .statusCode(anyOf(is(200), is(403)))
+                        .statusCode(200)
                         .extract()
                         .response();
 
         this.Global_Token= r3.jsonPath().get("accessToken");        
     }
 
-    @Test(enabled= false)
+    @Test(enabled= true)
     public void get_user_details(){
-                      given()
+        Response r4=  given()
                         .spec(reqSpec)
                         .header("Authorization", "Bearer"+ Global_Token)
                         .pathParam("id", 1)                        
                       .when()
                         .get("/carts/{id}")
                       .then()
-                        .spec(resSpec)
+                        .statusCode(200)
                         .extract().response();
+        System.out.println("User ID : " + r4.jsonPath().getString("userId"));
+        
+        List<Map<String, Object>> filteredObjects=r4.jsonPath().getList("products.findAll{ it.price <1000}");
+        filteredObjects.forEach(f1->System.out.println(f1.get("title")));
+        System.out.println("Available product: " + r4.jsonPath().getList("products").size());
     }
 
     @Test(enabled= false)
@@ -119,7 +125,7 @@ public class Day1 {
                         .header("server", "cloudflare");
     }
 
-    @Test
+    @Test(enabled=false)
     public void add_cart(){
         CartResponseDetails r6= given()
                         .spec(reqSpec)
