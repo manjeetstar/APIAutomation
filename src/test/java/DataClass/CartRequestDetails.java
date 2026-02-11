@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class CartDetails {
+public class CartRequestDetails {
     private int userId;
-    private List<Product> products;
+    private List<ProductRequest> products;
 }

@@ -22,6 +22,7 @@ import Config.configClass;
 import filter.RetryOnFailureFilter;
 import filter.RetryOnFailureFilter;
 import DataBuilder.DataBuild;
+import DataClass.*;
 
 @SuppressWarnings("unused")
 public class Day1 {
@@ -120,15 +121,17 @@ public class Day1 {
 
     @Test
     public void add_cart(){
-        Response r6= given()
+        CartResponseDetails r6= given()
                         .spec(reqSpec)
                         .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))
                         .body(DataBuild.cart())
                      .when()
                         .post("/carts/add")
                      .then()
+                        .statusCode(201)
                         .extract()
-                        .response();
-        r6.prettyPrint();
+                        .as(CartResponseDetails.class);
+        
+        System.out.println("Thumbnail URL :" + r6.getProducts().get(0).getThumbnail());
     }
 }
