@@ -6,11 +6,11 @@ import com.github.javafaker.Faker;
 
 public class DataBuild {
     private static final Faker faker= new Faker();
-    public static CartDetails cart(){
-        CartDetails cart= CartDetails.builder()
+    public static CartRequestDetails cart(){
+        CartRequestDetails cart= CartRequestDetails.builder()
                         .userId(faker.number().numberBetween(1, 120))
                         .products(List.of(
-                            Product.builder()
+                            ProductRequest.builder()
                                 .id(faker.number().numberBetween(1, 100))
                                 .quantity(faker.number().numberBetween(1, 2)).build()
                         )).build();

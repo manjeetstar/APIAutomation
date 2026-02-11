@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class Product {
+public class ProductRequest {
     private int id;
     private int quantity;
 }
