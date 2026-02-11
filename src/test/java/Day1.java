@@ -21,8 +21,6 @@ import io.restassured.specification.ResponseSpecification;
 
 import Config.configClass;
 import filter.RetryOnFailureFilter;
-import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
-import filter.RetryOnFailureFilter;
 import DataBuilder.DataBuild;
 import DataClass.*;
 
@@ -86,6 +84,7 @@ public class Day1 {
         List<Map<String, Object>> filteredObjects=r4.jsonPath().getList("products.findAll{ it.price <1000}");
         filteredObjects.forEach(f1->System.out.println(f1.get("title")));
         System.out.println("Available product: " + r4.jsonPath().getList("products").size());
+        System.out.println(r4.jsonPath().getObject("id", Integer.class));
     }
 
     @Test(enabled= false)
