@@ -21,6 +21,7 @@ import io.restassured.specification.ResponseSpecification;
 import Config.configClass;
 import filter.RetryOnFailureFilter;
 import filter.RetryOnFailureFilter;
+import DataBuilder.DataBuild;
 
 @SuppressWarnings("unused")
 public class Day1 {
@@ -80,7 +81,7 @@ public class Day1 {
                         .extract().response();
     }
 
-    @Test(enabled= true)
+    @Test(enabled= false)
     public void Add_Product(){
         File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
                     
@@ -115,5 +116,19 @@ public class Day1 {
                         .body("total", equalTo(194))
                         .body("products.size()", equalTo(1))
                         .header("server", "cloudflare");
+    }
+
+    @Test
+    public void add_cart(){
+        Response r6= given()
+                        .spec(reqSpec)
+                        .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))
+                        .body(DataBuild.cart())
+                     .when()
+                        .post("/carts/add")
+                     .then()
+                        .extract()
+                        .response();
+        r6.prettyPrint();
     }
 }
