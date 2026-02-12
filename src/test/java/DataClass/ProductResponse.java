@@ -16,6 +16,6 @@ public class ProductResponse {
     private int quantity;
     private double total;
     private double discountPercentage;
-    private int discountedPrice;
+    private int discountedTotal;
     private String thumbnail;
 }
