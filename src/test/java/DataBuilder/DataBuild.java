@@ -8,7 +8,7 @@ public class DataBuild {
     private static final Faker faker= new Faker();
     public static CartRequestDetails cart(){
         CartRequestDetails cart= CartRequestDetails.builder()
-                        .userId(faker.number().numberBetween(1, 120))
+                        .Id(faker.number().numberBetween(1, 120))
                         .products(List.of(
                             ProductRequest.builder()
                                 .id(faker.number().numberBetween(1, 100))
