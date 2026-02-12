@@ -141,6 +141,6 @@ public class Day1 {
                         .extract()
                         .as(CartResponseDetails.class);
         
-        System.out.println("Thumbnail URL :" + r6.getProducts().get(0).getThumbnail());
+        System.out.println("Thumbnail URL is :" + r6.getProducts().get(0).getThumbnail());
     }
 }
