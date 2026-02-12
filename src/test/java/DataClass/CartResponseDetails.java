@@ -20,5 +20,5 @@ public class CartResponseDetails {
     private int discountedTotal;
     private int userId;
     private int totalProducts;
-    private int totalQuantity;   
+    private int totalQuantity;    
 }

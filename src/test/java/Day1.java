@@ -14,129 +14,133 @@ import java.util.stream.IntStream;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.config.ObjectMapperConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.ResponseSpecification; 
+import io.restassured.specification.ResponseSpecification;
 
 import Config.configClass;
-import filter.RetryOnFailureFilter;
+import filter.*;
 import DataBuilder.DataBuild;
 import DataClass.*;
 
 @SuppressWarnings("unused")
 public class Day1 {
-    public Long PetID=new Random().nextLong(100000);
+    public Long PetID = new Random().nextLong(100000);
     public String Global_Token;
     public static RequestSpecification reqSpec;
     public static ResponseSpecification resSpec;
 
-   @BeforeSuite
-   public void setup(){
+    @BeforeSuite
+    public void setup() {
         reqSpec = new RequestSpecBuilder()
-                  .setBaseUri("https://dummyjson.com")
-                  .addHeaders(Map.of("Accept", "application/json"))
-                  .build();
+                .setBaseUri("https://dummyjson.com")
+                .addHeaders(Map.of("Accept", "application/json"))
+                .build();
         resSpec = new ResponseSpecBuilder()
-                    .expectStatusCode(201)
-                    .expectContentType(ContentType.JSON)
-                    .build();
+                .expectStatusCode(201)
+                .expectContentType(ContentType.JSON)
+                .build();
         configClass.init();
-        // RestAssured.filters(
-        //     new RetryOnFailureFilter(2,200)
-        // );
-   }
+        RestAssured.config = RestAssured.config.objectMapperConfig(
+                new ObjectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> JacksonConfig.getMapper()));
+    }
 
-    @Test(enabled= true)
-    public void get_global_token(){
-         Response r3 = given()  
-                        .spec(reqSpec)
-                        .header("Content-Type", "application/json")                      
-                        .body("""
+    @Test(enabled = true)
+    public void get_global_token() {
+        Response r3 = given()
+                .spec(reqSpec)
+                .header("Content-Type", "application/json")
+                .body("""
                             {
                                 "username": "emilys",
                                 "password": "emilyspass"
                             }
-                        """)                        
-                    .when()
-                        .post("/auth/login")
-                    .then()
-                        .statusCode(200)
-                        .extract()
-                        .response();
+                        """)
+                .when()
+                .post("/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
 
-        this.Global_Token= r3.jsonPath().get("accessToken");        
+        this.Global_Token = r3.jsonPath().get("accessToken");
     }
 
-    @Test(enabled= true)
-    public void get_user_details(){
-        Response r4=  given()
-                        .spec(reqSpec)
-                        .header("Authorization", "Bearer"+ Global_Token)
-                        .pathParam("id", 1)                        
-                      .when()
-                        .get("/carts/{id}")
-                      .then()
-                        .statusCode(200)
-                        .extract().response();
-        System.out.println("User ID : " + r4.jsonPath().getString("userId"));
-        
-        List<Map<String, Object>> filteredObjects=r4.jsonPath().getList("products.findAll{ it.price <1000}");
-        filteredObjects.forEach(f1->System.out.println(f1.get("title")));
-        System.out.println("Available product: " + r4.jsonPath().getList("products").size());
-        System.out.println(r4.jsonPath().getObject("id", Integer.class));
+    @Test(enabled = true)
+    public void get_user_details() {
+        CartResponseDetails r4 = given()
+                .spec(reqSpec)
+                .header("Authorization", "Bearer" + Global_Token)
+                .pathParam("id", 1)
+                .when()
+                .get("/carts/{id}")
+                .then()
+                .statusCode(200)
+                .extract().as(CartResponseDetails.class);
+        System.out.println("User ID : " + r4.getUserId());
+        System.out.println("Thumbnail is :" + r4.getProducts().get(0).getThumbnail());
+
+        // List<Map<String, Object>>
+        // filteredObjects=r4.jsonPath().getList("products.findAll{ it.price <1000}");
+        // filteredObjects.forEach(f1->System.out.println(f1.get("title")));
+        // System.out.println("Available product: " +
+        // r4.jsonPath().getList("products").size());
+        // System.out.println(r4.jsonPath().getObject("id", Integer.class));
     }
 
-    @Test(enabled= false)
-    public void Add_Product(){
+    @Test(enabled = false)
+    public void Add_Product() {
         File image = Paths.get("src", "test", "resources", "download.jpg").toFile();
-                    
-        IntStream.range(0, 3).forEach(i->{
-                    given()    
-                        .spec(reqSpec)
-                        .header("Authorization", "Bearer" + Global_Token)
-                        .multiPart("title", "iPhone 15 Pro")
-                        .multiPart("description", "Latest Apple phone")
-                        .multiPart("price", "1299")
-                        .multiPart("brand", "Apple")
-                        .multiPart("category", "smartphones")
-                        .multiPart("images", image)
-                     .when()
-                        .post("/products/add")
-                     .then()
-                        .spec(resSpec);
+
+        IntStream.range(0, 3).forEach(i -> {
+            given()
+                    .spec(reqSpec)
+                    .header("Authorization", "Bearer" + Global_Token)
+                    .multiPart("title", "iPhone 15 Pro")
+                    .multiPart("description", "Latest Apple phone")
+                    .multiPart("price", "1299")
+                    .multiPart("brand", "Apple")
+                    .multiPart("category", "smartphones")
+                    .multiPart("images", image)
+                    .when()
+                    .post("/products/add")
+                    .then()
+                    .spec(resSpec);
             System.out.println("Request #" + (i + 1));
         });
     }
-    @Test(enabled= false)
-    public void pagination_part1(){
-                     given()
-                        .queryParams(Map.of("limit", 1, "skip", 0))
-                        .spec(reqSpec)
-                     .when()    
-                        .get("/products")
-                     .then()
-                        .spec(resSpec)
-                        .body("skip", equalTo(0))
-                        .body("limit", equalTo(1))
-                        .body("total", equalTo(194))
-                        .body("products.size()", equalTo(1))
-                        .header("server", "cloudflare");
+
+    @Test(enabled = false)
+    public void pagination_part1() {
+        given()
+                .queryParams(Map.of("limit", 1, "skip", 0))
+                .spec(reqSpec)
+                .when()
+                .get("/products")
+                .then()
+                .spec(resSpec)
+                .body("skip", equalTo(0))
+                .body("limit", equalTo(1))
+                .body("total", equalTo(194))
+                .body("products.size()", equalTo(1))
+                .header("server", "cloudflare");
     }
 
-    @Test(enabled=false)
-    public void add_cart(){
-        CartResponseDetails r6= given()
-                        .spec(reqSpec)
-                        .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))
-                        .body(DataBuild.cart())
-                     .when()
-                        .post("/carts/add")
-                     .then()
-                        .statusCode(201)
-                        .extract()
-                        .as(CartResponseDetails.class);
-        
+    @Test(enabled = false)
+    public void add_cart() {
+        CartResponseDetails r6 = given()
+                .spec(reqSpec)
+                .headers(Map.of("Content-Type", "application/json", "Accept", "application/json"))
+                .body(DataBuild.cart())
+                .when()
+                .post("/carts/add")
+                .then()
+                .statusCode(201)
+                .extract()
+                .as(CartResponseDetails.class);
+
         System.out.println("Thumbnail URL :" + r6.getProducts().get(0).getThumbnail());
     }
 }
