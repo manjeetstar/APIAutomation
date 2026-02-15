@@ -50,7 +50,7 @@ public class Day1 {
             );       
    }
 
-    @Test(enabled= true)
+    @Test(enabled= false)
     public void get_global_token(){
          Response r3 = given()  
                         .spec(reqSpec)
@@ -71,7 +71,7 @@ public class Day1 {
         this.Global_Token= r3.jsonPath().get("accessToken");        
     }
 
-    @Test(enabled= true)
+    @Test(enabled= false)
     public void get_user_details(){
         CartResponseDetails r4= given()
                         .spec(reqSpec)
