@@ -14,6 +14,6 @@ public class ReceipeResponseDetails {
     public String name, image ;
     public String ingredients[], instructions[], tags[], mealType[];
     public int prepTimeMinutes, cookTimeMinutes, servings, caloriesPerServing ;   
-    public String difficulty[], cuisine[];
-    public double ratings;   
+    public String difficulty, cuisine;
+    public double rating;   
 }

@@ -4,7 +4,8 @@
 
     <test name="Smoke API Tests">
         <classes>
-            <class name="Day1"/>           
+            <class name="Day1"/> 
+            <class name="Day2"/>           
         </classes>
     </test>
 
