@@ -3,22 +3,23 @@ import static io.restassured.RestAssured.given;
 import org.testng.annotations.Test;
 
 import DataClass.ReceipeResponseDetails;
+import io.restassured.response.Response;
 
+@SuppressWarnings("unused")
 public class Day2 extends Day1{
    
    @Test
    public void addReceipe(){
-    ReceipeResponseDetails res=given()
-								.spec(reqSpec)
-								.pathParam("receipeID",1)
+    Response res=given()
+								.spec(reqSpec)								
 							.when()
-								.get("recipes/{receipeID}")
+								.get("/recipes")
 							.then()
+								.statusCode(200)
 								.extract()
-								.as(ReceipeResponseDetails.class);
+								.response();
 
-	for(String a: res.getIngredients()){
-		System.out.println(a);
-	}
+	System.out.println("Meal Type is "+ res.jsonPath().getList("recipes.findAll{it.difficulty == 'Easy'}").size());
+	//System.out.println("ID is "+ res.jsonPath().getInt("id"));
    }
 }
