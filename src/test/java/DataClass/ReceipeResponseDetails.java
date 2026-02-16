@@ -2,6 +2,8 @@ package DataClass;
 
 import lombok.Builder;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +19,6 @@ public class ReceipeResponseDetails {
     public String ingredients[], instructions[], tags[], mealType[];
     public int prepTimeMinutes, cookTimeMinutes, servings, caloriesPerServing ;   
     public String difficulty, cuisine;
+    @JsonAlias({"Rating","Rating-order","rating"})
     public double rating;   
 }
