@@ -10,15 +10,15 @@ public class Day2 extends Day1 {
 
 	@Test
 	public void addReceipe() {
-		Response res = given()
+		ReceipeResponseDetails res = given()
 					.spec(reqSpec)
 				.when()
-					.get("/recipes")
+					.get("/recipes/1")
 				.then()
 					.statusCode(200)
 					.extract()
-					.response();
+					.as(ReceipeResponseDetails.class);
 
-		System.out.println("Meal Type is " + res.jsonPath().getList("recipes.findAll{it.difficulty == 'Easy'}").size());
+		System.out.println("Rating Type is " + res.getRating() );
 	}
 }
