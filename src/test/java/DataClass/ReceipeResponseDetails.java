@@ -1,6 +1,7 @@
 package DataClass;
 
 import lombok.Builder;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class ReceipeResponseDetails {
     private int id, userId, reviewCount ;
     public String name, image ;
