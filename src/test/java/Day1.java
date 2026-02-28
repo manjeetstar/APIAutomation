@@ -17,6 +17,7 @@ import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import static io.restassured.config.SSLConfig.sslConfig;
 import static io.restassured.config.LogConfig.logConfig;
+import static io.restassured.config.EncoderConfig.encoderConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.mapper.ObjectMapperType;
@@ -56,7 +57,8 @@ public class Day1 {
         
         RestAssured.config=RestAssuredConfig.config()
                            .sslConfig(sslConfig().relaxedHTTPSValidation())
-                           .logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
+                           .logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails())
+                           .encoderConfig(encoderConfig().defaultContentCharset("UTF-9"));
    }
 
     @Test(enabled= false)
