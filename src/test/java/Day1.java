@@ -15,10 +15,15 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
+import static io.restassured.config.SSLConfig.sslConfig;
+import static io.restassured.config.LogConfig.logConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
+import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+
 
 import Config.configClass;
 import filter.*;
@@ -43,11 +48,15 @@ public class Day1 {
                     .expectContentType(ContentType.JSON)
                     .build();
         configClass.init();
-        RestAssured.config = RestAssured.config.objectMapperConfig(new ObjectMapperConfig().
-                                jackson2ObjectMapperFactory((cls, charset)->
-                                JacksonConfig.getMapper()
-                            )                   
-            );       
+        // RestAssured.config = RestAssured.config.objectMapperConfig(new ObjectMapperConfig().
+        //                         jackson2ObjectMapperFactory((cls, charset)->
+        //                         JacksonConfig.getMapper()
+        //                     )                   
+        //     );    
+        
+        RestAssured.config=RestAssuredConfig.config()
+                           .sslConfig(sslConfig().relaxedHTTPSValidation())
+                           .logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
    }
 
     @Test(enabled= false)
