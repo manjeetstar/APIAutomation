@@ -59,12 +59,12 @@ public class Day1 {
                            .sslConfig(sslConfig().relaxedHTTPSValidation())
                            .logConfig(logConfig().enableLoggingOfRequestAndResponseIfValidationFails())
                            .encoderConfig(encoderConfig().defaultContentCharset("UTF-9"));
-   }
+   } 
 
-    @Test(enabled= false)
+    @Test(enabled= true)
     public void get_global_token(){
          Response r3 = given()  
-                        .spec(reqSpec)
+                        .spec(reqSpec) 
                         .header("Content-Type", "application/json")                      
                         .body("""
                             {
